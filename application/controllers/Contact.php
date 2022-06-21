@@ -150,13 +150,13 @@ class Contact extends MY_Controller{
             $this->data['years'] = $this->db->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
         } elseif($this->uri->segment(3))
         {
-            $allData = $this->db->select('dt,id')->from('submitted_form')->get()->result();
-            foreach ($allData as $ds){
-                if (!empty($ds->dt)){
-                    $nw = date('Y-m-d',strtotime($ds->dt));
-                    $this->db->where('id',$ds->id)->update('submitted_form',['dt'=>$nw]);
-                }
-            }
+//            $allData = $this->db->select('dt,id')->from('submitted_form')->get()->result();
+//            foreach ($allData as $ds){
+//                if (!empty($ds->dt)){
+//                    $nw = date('Y-m-d',strtotime($ds->dt));
+//                    $this->db->where('id',$ds->id)->update('submitted_form',['dt'=>$nw]);
+//                }
+//            }
 
 
             $data = $this->data;
