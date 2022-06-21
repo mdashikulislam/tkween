@@ -21,7 +21,7 @@
                                     if (!empty(@$years)):
                                 ?>
                                 <select class="form-control" name="year">
-                                    <option value="">Select Year</option>
+                                    <option value="">اختر السنة</option>
                                     <?php
                                         foreach($years as $year):
                                     ?>
