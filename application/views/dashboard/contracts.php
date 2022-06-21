@@ -24,10 +24,11 @@
                                     <option value="">اختر السنة</option>
                                     <?php
                                         foreach($years as $year):
+                                            if (!empty($year['year'])):
                                     ?>
                                             <option <?php echo $this->input->get('year') == $year['year'] ? 'selected':''?> value="<?php echo $year['year'];?>"><?php echo $year['year']?></option>
                                     <?php
-                                        endforeach;
+                                       endif; endforeach;
                                     ?>
                                 </select>
                                 <?php endif;?>
@@ -127,7 +128,6 @@
                                         <td>
                                             <?php $date = date_create($rr['process_dt']);
                                             echo date_format($date, "d/m/Y"); ?>
-
                                         </td>
                                     <?php endif ?>
 
