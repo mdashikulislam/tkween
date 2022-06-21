@@ -1,0 +1,9 @@
+Domain Details;
+www.hatchway.org/cpanel
+Username; hatchway
+Password; newdawn7
+
+
+www.ernestmoses.com/cpanel
+Username; kingdom
+Password; manonmission7
