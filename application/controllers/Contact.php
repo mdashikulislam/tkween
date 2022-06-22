@@ -140,7 +140,7 @@ class Contact extends MY_Controller{
                 $this->db->or_like('name',$q);
                 $this->db->group_end();
             }
-            $this->data['rec'] = $this->db->get()->result_array();
+            $this->data['rec'] = $this->db->order_by('id','desc')->get()->result_array();
             $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data);
             if ($this->uri->segment(3) == 'old_new'){
                 $this->db->where('dt < ',$showDate);
