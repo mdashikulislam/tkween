@@ -140,7 +140,7 @@ class Contact extends MY_Controller{
                 $this->db->or_like('name',$q);
                 $this->db->group_end();
             }
-            $this->data['rec'] = $this->db->order_by('id','desc')->get()->result_array();
+            $this->data['rec'] = $this->db->order_by('dt','desc')->get()->result_array();
             $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data);
             if ($this->uri->segment(3) == 'old_new'){
                 $this->db->where('dt < ',$showDate);
@@ -182,32 +182,32 @@ class Contact extends MY_Controller{
                 $config['base_url'] = base_url('dashboard/contracts/old_new');
                 $config['total_rows'] = $this->db->where($this->data)->where('dt < ',$showDate)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
-                $this->data['rec'] =  $this->db->from('submitted_form')->where($this->data)->where('dt < ',$showDate)->limit($config['per_page'], $offset)->order_by('id','desc')->get()->result_array();
+                $this->data['rec'] =  $this->db->from('submitted_form')->where($this->data)->where('dt < ',$showDate)->limit($config['per_page'], $offset)->order_by('dt','desc')->get()->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->where('dt < ',$showDate)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
             }else if ($this->uri->segment(3) == 'new'){
                 $config['base_url'] = base_url('dashboard/contracts/new/');
                 $config['total_rows'] = $this->db->where($this->data)->where('dt >= ',$showDate)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
-                $this->data['rec'] =  $this->db->where($this->data)->where('dt >= ',$showDate)->limit($config['per_page'], $offset)->order_by('id','desc')->get('submitted_form')->result_array();
+                $this->data['rec'] =  $this->db->where($this->data)->where('dt >= ',$showDate)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->where('dt >= ',$showDate)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
 
             }else if($this->uri->segment(3) == 'inprogress'){
                 $config['base_url'] = base_url('dashboard/contracts/inprogress/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
-                $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('id','desc')->get('submitted_form')->result_array();
+                $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
             }else if($this->uri->segment(3) == 'old_processed'){
                 $config['base_url'] = base_url('dashboard/contracts/old_processed/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
-                $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('id','desc')->get('submitted_form')->result_array();
+                $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
             }else{
                 $config['base_url'] = base_url('dashboard/contracts/inprogress/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
-                $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('id','desc')->get('submitted_form')->result_array();
+                $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
             }
         }
