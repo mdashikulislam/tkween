@@ -195,8 +195,8 @@ class Contact extends MY_Controller{
                 $config['base_url'] = base_url('dashboard/contracts/inprogress/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
-                $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
-                $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
+                $this->data['rec'] =  $this->db->where($this->data)->where('dt >= ',$showDate)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
+                $this->data['years'] = $this->db->select('YEAR(dt) as year')->where('dt >= ',$showDate)->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
             }else if($this->uri->segment(3) == 'old_processed'){
                 $config['base_url'] = base_url('dashboard/contracts/old_processed/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
