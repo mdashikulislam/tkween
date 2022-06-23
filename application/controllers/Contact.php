@@ -115,12 +115,18 @@ class Contact extends MY_Controller{
             }
         }
         $showDate = '2022-01-01';
-        if(!empty($this->input->get('search')) || !empty($this->input->get('year')) || !empty($this->input->get('month')))
+        if(
+            !empty($this->input->get('search')) ||
+            !empty($this->input->get('year')) ||
+            !empty($this->input->get('month')) ||
+            !empty($this->input->get('author'))
+        )
         {
             $data = $this->data;
             $q = $this->input->get('search');
             $year = $this->input->get('year');
             $month = $this->input->get('month');
+
             $this->db->from('submitted_form')->where($this->data);
             if ($this->uri->segment(3) == 'old_new'){
                 $this->db->where('dt < ',$showDate);
@@ -129,6 +135,10 @@ class Contact extends MY_Controller{
             }
             if (!empty($year)){
                 $this->db->where("YEAR(dt)",$year);
+            }
+            if (!empty( $this->input->get('author'))){
+                $author = $this->input->get('author') == 'author' ? 0 : $this->input->get('author');
+                $this->db->where("admin_id",$author);
             }
             if (!empty($month)){
                 $this->db->where("MONTH(dt)",$month);
@@ -148,6 +158,10 @@ class Contact extends MY_Controller{
                 $this->db->where('dt >= ',$showDate);
             }
             $this->data['years'] = $this->db->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
+             $this->db->select('users.name,users.id')->from('submitted_form')
+                ->join('users','users.id = submitted_form.admin_id','INNER');
+            $this->data['authors'] =$this->db->group_by('submitted_form.admin_id')->get()->result_array();
+
         } elseif($this->uri->segment(3))
         {
 //            $allData = $this->db->select('dt,id')->from('submitted_form')->get()->result();
@@ -184,31 +198,46 @@ class Contact extends MY_Controller{
                 $this->pagination->initialize($config);
                 $this->data['rec'] =  $this->db->from('submitted_form')->where($this->data)->where('dt < ',$showDate)->limit($config['per_page'], $offset)->order_by('dt','desc')->get()->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->where('dt < ',$showDate)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
             }else if ($this->uri->segment(3) == 'new'){
                 $config['base_url'] = base_url('dashboard/contracts/new/');
                 $config['total_rows'] = $this->db->where($this->data)->where('dt >= ',$showDate)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
                 $this->data['rec'] =  $this->db->where($this->data)->where('dt >= ',$showDate)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->where('dt >= ',$showDate)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
-
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
             }else if($this->uri->segment(3) == 'inprogress'){
                 $config['base_url'] = base_url('dashboard/contracts/inprogress/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
                 $this->data['rec'] =  $this->db->where($this->data)->where('dt >= ',$showDate)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->where('dt >= ',$showDate)->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
+
             }else if($this->uri->segment(3) == 'old_processed'){
                 $config['base_url'] = base_url('dashboard/contracts/old_processed/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
                 $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
             }else{
                 $config['base_url'] = base_url('dashboard/contracts/inprogress/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
                 $this->pagination->initialize($config);
                 $this->data['rec'] =  $this->db->where($this->data)->limit($config['per_page'], $offset)->order_by('dt','desc')->get('submitted_form')->result_array();
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
             }
         }
         if($this->uri->segment(3)=='inprogress')

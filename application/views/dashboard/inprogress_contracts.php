@@ -19,6 +19,22 @@
                                         <i class="fa fa-search"></i></button>
                                 </div>
                                 <?php
+                                if (!empty(@$authors)):
+                                    ?>
+                                    <select class="form-control" name="author">
+                                        <option value="">مقاول</option>
+                                        <option <?php echo $this->input->get('author') == 'author' ?'selected':''?> value="author">Author</option>
+                                        <?php
+                                        foreach($authors as $author):
+                                            if (!empty($author['name'])):
+                                                ?>
+                                                <option <?php echo $this->input->get('author') == $author['id'] ? 'selected':''?> value="<?php echo $author['id'];?>"><?php echo $author['name']?></option>
+                                            <?php
+                                            endif; endforeach;
+                                        ?>
+                                    </select>
+                                <?php endif;?>
+                                <?php
                                 if (!empty(@$years)):
                                     ?>
                                     <select class="form-control" name="year">
