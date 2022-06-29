@@ -18,13 +18,40 @@ class Site extends CI_Controller
 	{
 		$this->load->view('authorguid');
 	}
-	public function email($to,$sub,$msg)
+
+    public function mails()
+    {
+        $this->load->view('mails/recovery');
+    }
+	public function email($to,$sub,$msg,$template = '')
 	{
-		$config['protocol'] = "mail";
-		$config['smtp_host'] = 'wonderhouse.com.sa';
+//        $config['useragent'] = 'WonderHouse';
+//        $config['protocol'] = "mail";
+//        $config['smtp_host'] = 'wonderhouse.com.sa';
+//        $config['smtp_port'] = '465';
+//        $config['smtp_timeout']=30;
+//        $config['smtp_user'] = 'noreply@wonderhouse.com.sa';
+//        $config['smtp_pass'] = 'b@cdp]:583*f';
+//        $config['charset'] = "utf-8";
+//        $config['mailtype'] = "html";
+//        $config['newline'] = "\r\n";
+//        $config['wordwrap'] = TRUE;
+//        $this->load->library('email');
+//        $this->email->initialize($config);
+//        $this->email->to($to);
+//        $this->email->from('noreply@wonderhouse.com.sa','WonderHouse');
+//        $this->email->subject($sub);
+//        $this->email->message($msg);
+//        $this->email->send();
+
+
+        $config['useragent'] = 'WonderHouse';
+		$config['protocol'] = "smtp";
+		$config['smtp_host'] = 'ssl://mail.shrewsburycup-appadmin.co.uk';
 		$config['smtp_port'] = '465';
-		$config['smtp_user'] = 'noreply@wonderhouse.com.sa'; 
-		$config['smtp_pass'] = 'b@cdp]:583*f';
+        $config['smtp_timeout']=30;
+		$config['smtp_user'] = 'admin@shrewsburycup-appadmin.co.uk';
+		$config['smtp_pass'] = 'Sumon11224411';
 		$config['charset'] = "utf-8";
 		$config['mailtype'] = "html";
 		$config['newline'] = "\r\n";
@@ -32,9 +59,17 @@ class Site extends CI_Controller
 		$this->load->library('email');
 		$this->email->initialize($config);
 		$this->email->to($to);
-		$this->email->from('noreply@wonderhouse.com.sa','WonderHouse');
+		$this->email->from('admin@shrewsburycup-appadmin.co.uk','WonderHouse');
 		$this->email->subject($sub);
-		$this->email->message($msg);
+        if ($template == 'verification'){
+            $view = $this->load->view('mails/verification',$msg,true);
+            $this->email->message($view);
+        }elseif ($template == 'recovery'){
+            $view = $this->load->view('mails/recovery',$msg,true);
+            $this->email->message($view);
+        }else{
+            $this->email->message($msg);
+        }
 		$this->email->send();
 		
 	}
@@ -65,18 +100,10 @@ class Site extends CI_Controller
 			{
 				if($rec[0]['status']==1)
 				{
-					$msg = '
-					Dear '.$rec[0]['name'].'!<br><br>
-					Thank you for creating account with WonderHouse. Click the following link to activate your account.
-					
-					<br><br>
-						<a href="'.base_url().'verification/'.$rec[0]['code'].'">Activate My Account</a>
-					<br><br>
-					Regards<br>
-					wonderhouse.com.sa
-					
-					';
-					$this->email($rec[0]['email'],'Thank you for creating account.',$msg);
+
+                    $mailData['name'] = $rec[0]['name'];
+                    $mailData['url'] = base_url().'verification/'.$rec[0]['code'];
+					$this->email($rec[0]['email'],'Thank you for creating account.',$mailData,'verification');
 					$this->session->set_flashdata('report','Account not activated. Please verify your email address');
 					redirect(base_url('login'));		
 				}
@@ -132,18 +159,9 @@ class Site extends CI_Controller
 			$this->db->where('id',$id)->update('users',array('code'=>$code.$id));
 			
 			$code = $code.$id;
-			$msg = '
-					Dear '.$this->input->post('name').'!<br><br>
-					Thank you for creating account with WonderHouse. Click the following link to activate your account.
-					
-					<br><br>
-						<a href="'.base_url().'verification/'.$code.'">Activate My Account</a>
-					<br><br>
-					Regards<br>
-					wonderhouse.com.sa
-					
-					';
-			$this->email($this->input->post('email'),'Thank you for creating account.',$msg);
+            $mailData['name'] = $this->input->post('name');
+            $mailData['url'] = base_url().'verification/'.$code;
+			$this->email($this->input->post('email'),'Thank you for creating account.',$mailData,'verification');
 			$this->session->set_flashdata('success','Registered Successfully.An email is sent to your email address, Please verify your email to activate your account.');
 			redirect(base_url('login'));	
 		}
@@ -175,20 +193,10 @@ class Site extends CI_Controller
 		$rec = $this->db->where('email',$this->input->post('email'))->get('users')->result_array();
 		if(count($rec))
 		{
-			$msg = '
-					Dear '.$rec[0]['name'].'!<br><br>
-					Thank you for creating account with WonderHouse. Following are your login information.
-					
-					<br><br>
-						Email: '.$rec[0]['email'].'
-						<br>
-						Password: '.$rec[0]['pass'].'
-					<br><br>
-					Regards<br>
-					wonderhouse.com.sa
-					
-					';
-			$this->email($rec[0]['email'],'Password Recovery',$msg);
+            $mailData['name'] =$rec[0]['name'];
+            $mailData['email'] =$rec[0]['email'];
+            $mailData['pass'] =$rec[0]['pass'];
+            $this->email($rec[0]['email'],'Password Recovery',$mailData,'recovery');
 			$this->session->set_flashdata('success','Your Password Recovery Information has been sent to your given email address.');
 			redirect(base_url('forgot-password'));	
 		}

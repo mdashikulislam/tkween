@@ -991,8 +991,8 @@ class Dashboard extends MY_Controller
     public function reply_contact_data()
     {
 		$rec = $this->db->where('id',$this->input->post('id'))->get('msgs')->result_array();
-         $this->data['admin_sub']=$this->input->post('admin_sub');
-          $this->data['admin_msg']=$this->input->post('admin_msg');
+        $this->data['admin_sub']=$this->input->post('admin_sub');
+        $this->data['admin_msg']=$this->input->post('admin_msg');
 	   $this->data['status']=1;
        $this->data['reply_dt']=date('Y-m-d');
 	   if( $_FILES['admin_doc']['name'])

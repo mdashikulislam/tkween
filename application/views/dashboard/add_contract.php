@@ -19,7 +19,7 @@
                                 </p>
                             </div>
                             <div class="card-body ">
-                            <form method="post" action="<?= $this->load->config->base_url() ?>dashboard/add-contract_data">
+                            <form method="post" action="<?= $this->load->config->base_url() ?>dashboard/add_contract_data">
                             <table class="table">
                             	<tr  style="background:#f5f5f5">
                                	<th colspan="3">معلومات المؤلف</th>

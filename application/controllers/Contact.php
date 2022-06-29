@@ -23,8 +23,6 @@ class Contact extends MY_Controller{
         $pdf = str_replace('*allowed_copies*',$this->input->post('allowed_copies'),$pdf);
         $contract = str_replace('*free_copies*',$this->input->post('free_copies'),$pdf);
 
-
-
         $this->data['edition']=$this->input->post('edition');
         $this->data['name']=$this->input->post('name');
         $this->data['email']=$this->input->post('email');
