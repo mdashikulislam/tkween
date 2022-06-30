@@ -66,6 +66,7 @@ $route['verification/(:any)'] = 'site/verification_account';
 $route['dashboard/contract_detail/printing/(:num)'] = 'Dashboard/printing';
 $route['dashboard/contract-messages'] = 'Message/contract_messages';
 $route['dashboard/inbox'] = 'Message/inbox';
+$route['dashboard/inbox/(:num)'] = 'Message/inbox';
 $route['dashboard/add-plan-type'] = 'Package/add_plan_type';
 $route['dashboard/add_plan_type_data'] = 'Package/add_plan_type_data';
 $route['dashboard/plan-types'] = 'Package/plan_types';

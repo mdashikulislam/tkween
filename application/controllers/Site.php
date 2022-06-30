@@ -21,7 +21,7 @@ class Site extends CI_Controller
 
     public function mails()
     {
-        $this->load->view('mails/recovery');
+        $this->load->view('mails/reply');
     }
 	public function email($to,$sub,$msg,$template = '')
 	{
@@ -45,13 +45,13 @@ class Site extends CI_Controller
 //        $this->email->send();
 
 
-        $config['useragent'] = 'WonderHouse';
-		$config['protocol'] = "smtp";
-		$config['smtp_host'] = 'ssl://mail.shrewsburycup-appadmin.co.uk';
-		$config['smtp_port'] = '465';
+        $config['useragent'] = config_item('name');
+		$config['protocol'] = config_item('protocol');
+		$config['smtp_host'] = config_item('smtp_host');
+		$config['smtp_port'] = config_item('smtp_port');
         $config['smtp_timeout']=30;
-		$config['smtp_user'] = 'admin@shrewsburycup-appadmin.co.uk';
-		$config['smtp_pass'] = 'Sumon11224411';
+		$config['smtp_user'] = config_item('smtp_user');
+		$config['smtp_pass'] = config_item('smtp_pass');
 		$config['charset'] = "utf-8";
 		$config['mailtype'] = "html";
 		$config['newline'] = "\r\n";
@@ -59,7 +59,7 @@ class Site extends CI_Controller
 		$this->load->library('email');
 		$this->email->initialize($config);
 		$this->email->to($to);
-		$this->email->from('admin@shrewsburycup-appadmin.co.uk','WonderHouse');
+		$this->email->from(config_item('smtp_user'),config_item('name'));
 		$this->email->subject($sub);
         if ($template == 'verification'){
             $view = $this->load->view('mails/verification',$msg,true);

@@ -12,11 +12,12 @@ class Dashboard extends MY_Controller
 
 	public function email($to,$sub,$msg,$file)
 	{
-		$config['protocol'] = "mail";
-		$config['smtp_host'] = 'wonderhouse.com.sa';
-		$config['smtp_port'] = '465';
-		$config['smtp_user'] = 'noreply@wonderhouse.com.sa'; 
-		$config['smtp_pass'] = 'b@cdp]:583*f';
+		$config['protocol'] = config_item('protocol');
+		$config['smtp_host'] = config_item('smtp_host');
+		$config['smtp_port'] = config_item('smtp_port');
+		$config['smtp_user'] = config_item('smtp_user');
+		$config['smtp_pass'] = config_item('smtp_pass');
+        $config['smtp_timeout']=30;
 		$config['charset'] = "utf-8";
 		$config['mailtype'] = "html";
 		$config['newline'] = "\r\n";
@@ -24,9 +25,12 @@ class Dashboard extends MY_Controller
 		$this->load->library('email');
 		$this->email->initialize($config);
 		$this->email->to($to);
-		$this->email->from('noreply@wonderhouse.com.sa','WonderHouse');
+		$this->email->from(config_item('smtp_user'),config_item('name'));
 		$this->email->subject($sub);
-		$this->email->message($msg);
+        $data['msg'] = $msg;
+        $view =  $this->load->view('mails/reply',$data,true);
+        $this->email->message($view);
+		//$this->email->message($msg);
 		$this->email->attach($file);
 		$this->email->send();
 	}
