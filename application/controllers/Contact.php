@@ -112,6 +112,11 @@ class Contact extends MY_Controller{
                 redirect(base_url('dashboard'));
             }
         }
+        $data = $this->data;
+        $updateKey = [];
+        foreach ($data as $key=>$d){
+            $updateKey['submitted_form.'.$key] = $d;
+        }
         $showDate = '2022-01-01';
         if(
             !empty($this->input->get('search')) ||
@@ -128,6 +133,7 @@ class Contact extends MY_Controller{
             $this->db->from('submitted_form')->where($this->data);
             if ($this->uri->segment(3) == 'old_new'){
                 $this->db->where('dt < ',$showDate);
+
             }else if($this->uri->segment(3) == 'new'){
                 $this->db->where('dt >= ',$showDate);
             }
@@ -160,6 +166,32 @@ class Contact extends MY_Controller{
                 ->join('users','users.id = submitted_form.admin_id','INNER');
             $this->data['authors'] =$this->db->group_by('submitted_form.admin_id')->get()->result_array();
 
+            if ($this->uri->segment(3) == 'old_new'){
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where('submitted_form.dt < ',$showDate)
+                    ->where($updateKey)
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
+            }elseif ($this->uri->segment(3) == 'new'){
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where('submitted_form.dt >= ',$showDate)
+                    ->where($updateKey)
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
+            }elseif ($this->uri->segment(3) == 'inprogress'){
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where($updateKey)
+                    ->where('submitted_form.dt >= ',$showDate)
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
+            }else{
+                $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
+                    ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where($updateKey)
+                    ->group_by('submitted_form.admin_id')->get()->result_array();
+            }
+
+
         } elseif($this->uri->segment(3))
         {
 //            $allData = $this->db->select('dt,id')->from('submitted_form')->get()->result();
@@ -171,7 +203,6 @@ class Contact extends MY_Controller{
 //            }
 
 
-            $data = $this->data;
             $config=array(
                 'per_page' 			=> 50,
                 'full_tag_open' 	=> "<ul class='pagination'>",
@@ -198,6 +229,8 @@ class Contact extends MY_Controller{
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->where('dt < ',$showDate)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
                 $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
                     ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where('submitted_form.dt < ',$showDate)
+                    ->where($updateKey)
                     ->group_by('submitted_form.admin_id')->get()->result_array();
             }else if ($this->uri->segment(3) == 'new'){
                 $config['base_url'] = base_url('dashboard/contracts/new/');
@@ -207,6 +240,8 @@ class Contact extends MY_Controller{
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->where('dt >= ',$showDate)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
                 $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
                     ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where('submitted_form.dt >= ',$showDate)
+                    ->where($updateKey)
                     ->group_by('submitted_form.admin_id')->get()->result_array();
             }else if($this->uri->segment(3) == 'inprogress'){
                 $config['base_url'] = base_url('dashboard/contracts/inprogress/');
@@ -216,8 +251,9 @@ class Contact extends MY_Controller{
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->where('dt >= ',$showDate)->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
                 $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
                     ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where($updateKey)
+                    ->where('submitted_form.dt >= ',$showDate)
                     ->group_by('submitted_form.admin_id')->get()->result_array();
-
             }else if($this->uri->segment(3) == 'old_processed'){
                 $config['base_url'] = base_url('dashboard/contracts/old_processed/');
                 $config['total_rows'] = $this->db->where($this->data)->get('submitted_form')->num_rows();
@@ -226,6 +262,7 @@ class Contact extends MY_Controller{
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
                 $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
                     ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where($updateKey)
                     ->group_by('submitted_form.admin_id')->get()->result_array();
             }else{
                 $config['base_url'] = base_url('dashboard/contracts/inprogress/');
@@ -235,6 +272,7 @@ class Contact extends MY_Controller{
                 $this->data['years'] = $this->db->select('YEAR(dt) as year')->from('submitted_form')->where($data)->group_by('YEAR(dt)')->order_by('YEAR(dt)','desc')->get()->result_array();
                 $this->data['authors'] = $this->db->select('users.name,users.id')->from('submitted_form')
                     ->join('users','users.id = submitted_form.admin_id','INNER')
+                    ->where($updateKey)
                     ->group_by('submitted_form.admin_id')->get()->result_array();
             }
         }
